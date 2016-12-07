@@ -1,0 +1,70 @@
+#+TITLE: Distributed Clojure Plan
+#+AUTHOR: Mohammad Sadegh Khoeini (MSK)
+
+* Introduction
+
+Recently, I've been busy studying erlang platform; And honestly I've got
+impressed by its distributed capabilities and ease of use. I think clojure
+deserves similar kind of ease of use in the distributed senarios.
+
+* The Plan
+1. base:: Investigate Poded-Clojure: A drop-in replacement for clojure.jar which
+   would provide boot-clj pods and pomegrenade dependency resolution out of the
+   box.
+2. bitstring:: Create the DSL like that of erlang's for working with binary
+   data.
+3. zeromq:: Create an idiomatic message exchange library based on zeromq and
+   transit.
+4. consul:: Investigate Bitcoin, Namecoin, Torrent, DHT, and blockchain for
+   providing a seemless distributed context.
+5. zookeeper:: Implement major distributed algorithms like paxos, raft, zab,
+   pbft, consistent hashing, etc.
+6. kafka:: Investigate rocksdb and related data structures for persistent.
+7. datalog:: Investigate datascript for providing the basic query functionality.
+
+* The Vision
+
+I'd like something similar to the erlang's in the beginning. I Just start a node
+with some parameters and it just connects to the rest of the network and can
+effectively exchange messages with the rest of the network.
+
+However, I want more than that. I want that when I start a network I also
+provide a kafka like persistent replicated sharded repeatable logging system, a
+consul like service discovery and distributed consistent key-value store out of
+the box as well. These things, a network, a log, a service discovery service,
+and a distributed kv-store, provide the backbone of the distributed framework.
+Then based on this backbone, I like to be able to easily spin services.
+
+A service is like a go block; Thin and lightweight. In a node, I just start a
+service, and the node takes care of monitoring it.
+
+Nodes can have labels to specify their properties and capabilities. Then,
+services specify their replication and sharding requirements. And nodes
+cooperate with each other to satisfy the service's requirements. For example,
+the node that service first requests starting can act as the leader. And if it
+goes down, somebody else from the ring takes the responsibility. And the leader
+is the one that ensures the service's requirements.
+
+A service is soon as it starts connects to the log and provides two sets of
+capabilities. First, it provides a uniform interface for querying it. By uniform
+I mean that all the services provide the same exact interface. And by being
+queryable I mean that services are actually stateful things. Actually, their
+state is their point of interest. All their reason of existance is to represent
+some state in the system and make it easy for the rest of the system to know
+that state and affect it.
+
+So the second capability of the service is that it provides some commands for
+the rest of the system. By command I mean that the service listens for some
+predefined patterns of data to be relayed to it via a specified interface, and
+upon receiving any of the predefined patterns it changes state.
+
+So it must be noted that querying the service doesn't change its state. But
+returns some data to the requester. On the other hand, commanding changes the
+state of the service but doesn't return any data to the requester. 
+
+Also, another characteristic of the services are that their state is versioned.
+Since the are stateful and shared in a distributed system there is no otherway
+to make it all work. When a service changes state, it reports that in the log.
+Then it is the responsibility of its peers to be informed of the changed state
+and keep up with it. When they query or command, they can specify the version
+they expect the service to be in to prevent surprises.
