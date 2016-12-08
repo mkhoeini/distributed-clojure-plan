@@ -15,7 +15,7 @@ deserves similar kind of ease of use in the distributed senarios.
    data.
 3. zeromq:: Create an idiomatic message exchange library based on zeromq and
    transit.
-4. consul:: Investigate Bitcoin, Namecoin, Torrent, DHT, and blockchain for
+4. consul:: Investigate Bitcoin, Namecoin, Torrent, DHT, Chord, Kademlia, and blockchain for
    providing a seemless distributed context.
 5. zookeeper:: Implement major distributed algorithms like paxos, raft, zab,
    pbft, consistent hashing, etc.
